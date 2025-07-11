@@ -21,8 +21,8 @@ const Header = ({ user, notifications = 3 }) => {
     <header className="h-16 border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="flex items-center justify-between h-full px-6">
         <div className="flex items-center gap-4">
-          <SidebarTrigger className="lg:hidden" />
-          <div className="hidden lg:block">
+          <SidebarTrigger />
+          <div className="lg:block">
             <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               EduFlow
             </h1>

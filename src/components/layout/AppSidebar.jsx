@@ -105,7 +105,7 @@ const AppSidebar = () => {
 
   return (
     <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-200 flex items-center justify-between">
         <h1 className="text-xl font-bold text-gray-900">EduPlatform</h1>
       </div>
       
