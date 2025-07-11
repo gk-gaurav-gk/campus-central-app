@@ -17,7 +17,11 @@ import {
   Target,
   ChevronRight,
   User,
-  Settings
+  Settings,
+  DollarSign,
+  Activity,
+  GraduationCap,
+  Database
 } from 'lucide-react';
 import AttendanceKPI from './widgets/AttendanceKPI';
 import AssignmentKPI from './widgets/AssignmentKPI';
@@ -25,9 +29,11 @@ import VirtualCurrencyKPI from './widgets/VirtualCurrencyKPI';
 import UpcomingEventsKPI from './widgets/UpcomingEventsKPI';
 import MiniCalendar from './widgets/MiniCalendar';
 import NotificationBell from './widgets/NotificationBell';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 const HeroDashboard = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const { userRole, isStudent, isTeacher, isAdmin, getRoleBadgeColor } = useRoleAccess();
 
   // Mock data for dashboard
   const attendanceData = {

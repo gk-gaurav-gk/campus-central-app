@@ -4,8 +4,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 const Header = ({ user, notifications = 3 }) => {
+  const { userRole, getRoleBadgeColor } = useRoleAccess();
+  
+  const getRoleDisplayName = (role) => {
+    switch (role) {
+      case 'admin': return 'Administrator';
+      case 'teacher': return 'Teacher';
+      case 'student': return 'Student';
+      default: return role;
+    }
+  };
   return (
     <header className="h-16 border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="flex items-center justify-between h-full px-6">
@@ -45,7 +56,14 @@ const Header = ({ user, notifications = 3 }) => {
           <div className="flex items-center gap-2 pl-2 border-l">
             <div className="text-right hidden sm:block">
               <p className="text-sm font-medium">{user?.name || 'Student'}</p>
-              <p className="text-xs text-muted-foreground">{user?.role || 'Computer Science'}</p>
+              <div className="flex items-center gap-2 justify-end">
+                <Badge 
+                  variant="secondary" 
+                  className={`text-xs ${getRoleBadgeColor()}`}
+                >
+                  {getRoleDisplayName(userRole || user?.role)}
+                </Badge>
+              </div>
             </div>
             <Button variant="ghost" size="icon" className="rounded-full">
               <User className="h-5 w-5" />

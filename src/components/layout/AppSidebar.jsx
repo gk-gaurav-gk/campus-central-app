@@ -9,20 +9,99 @@ import {
   Users, 
   Settings,
   GraduationCap,
-  ClipboardList
+  ClipboardList,
+  MessageSquare,
+  Video,
+  Calendar,
+  FileText,
+  Shield,
+  Database,
+  CreditCard,
+  Bus,
+  Car,
+  HeartHandshake,
+  Trophy,
+  Briefcase
 } from 'lucide-react';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 const AppSidebar = () => {
-  const menuItems = [
-    { icon: Home, label: 'Dashboard', path: '/' },
-    { icon: UserCheck, label: 'Attendance', path: '/attendance' },
-    { icon: GraduationCap, label: 'Quizzes', path: '/quizzes' },
-    { icon: ClipboardList, label: 'Assignments', path: '/assignments' },
-    { icon: BookOpen, label: 'Courses', path: '/courses' },
-    { icon: Users, label: 'Students', path: '/students' },
-    { icon: BarChart3, label: 'Analytics', path: '/analytics' },
-    { icon: Settings, label: 'Settings', path: '/settings' },
-  ];
+  const { userRole, canAccess, isStudent, isTeacher, isAdmin } = useRoleAccess();
+
+  // Define menu items with role-based access
+  const getMenuItems = () => {
+    const baseItems = [
+      { icon: Home, label: 'Dashboard', path: '/', roles: ['student', 'teacher', 'admin'] },
+    ];
+
+    const studentItems = [
+      { icon: UserCheck, label: 'Attendance', path: '/attendance', roles: ['student'] },
+      { icon: GraduationCap, label: 'Quizzes', path: '/quizzes', roles: ['student'] },
+      { icon: ClipboardList, label: 'Assignments', path: '/assignments', roles: ['student'] },
+      { icon: BookOpen, label: 'Courses', path: '/courses', roles: ['student'] },
+      { icon: MessageSquare, label: 'Messages', path: '/messages', roles: ['student'] },
+      { icon: CreditCard, label: 'Fees', path: '/fees', roles: ['student'] },
+      { icon: Bus, label: 'Transport', path: '/transport', roles: ['student'] },
+      { icon: Car, label: 'Cab Sharing', path: '/cab-sharing', roles: ['student'] },
+      { icon: HeartHandshake, label: 'Counseling', path: '/counseling', roles: ['student'] },
+      { icon: Trophy, label: 'Rewards', path: '/rewards', roles: ['student'] },
+    ];
+
+    const teacherItems = [
+      { icon: UserCheck, label: 'Attendance', path: '/attendance', roles: ['teacher'] },
+      { icon: GraduationCap, label: 'Quizzes', path: '/quizzes', roles: ['teacher'] },
+      { icon: ClipboardList, label: 'Assignments', path: '/assignments', roles: ['teacher'] },
+      { icon: BookOpen, label: 'Courses', path: '/courses', roles: ['teacher'] },
+      { icon: Users, label: 'Students', path: '/students', roles: ['teacher'] },
+      { icon: Video, label: 'Video Classes', path: '/video-classes', roles: ['teacher'] },
+      { icon: MessageSquare, label: 'Messages', path: '/messages', roles: ['teacher'] },
+      { icon: BarChart3, label: 'Analytics', path: '/analytics', roles: ['teacher'] },
+      { icon: FileText, label: 'Research', path: '/research', roles: ['teacher'] },
+      { icon: Briefcase, label: 'Placements', path: '/placements', roles: ['teacher'] },
+    ];
+
+    const adminItems = [
+      { icon: UserCheck, label: 'Attendance', path: '/attendance', roles: ['admin'] },
+      { icon: GraduationCap, label: 'Quizzes', path: '/quizzes', roles: ['admin'] },
+      { icon: ClipboardList, label: 'Assignments', path: '/assignments', roles: ['admin'] },
+      { icon: BookOpen, label: 'Courses', path: '/courses', roles: ['admin'] },
+      { icon: Users, label: 'Users', path: '/users', roles: ['admin'] },
+      { icon: Video, label: 'Video Classes', path: '/video-classes', roles: ['admin'] },
+      { icon: MessageSquare, label: 'Messages', path: '/messages', roles: ['admin'] },
+      { icon: BarChart3, label: 'Analytics', path: '/analytics', roles: ['admin'] },
+      { icon: CreditCard, label: 'Fee Management', path: '/fee-management', roles: ['admin'] },
+      { icon: Bus, label: 'Transport', path: '/transport-admin', roles: ['admin'] },
+      { icon: HeartHandshake, label: 'Counseling', path: '/counseling-admin', roles: ['admin'] },
+      { icon: Trophy, label: 'Gamification', path: '/gamification', roles: ['admin'] },
+      { icon: FileText, label: 'Research', path: '/research', roles: ['admin'] },
+      { icon: Briefcase, label: 'Placements', path: '/placements', roles: ['admin'] },
+      { icon: Shield, label: 'Security', path: '/security', roles: ['admin'] },
+      { icon: Database, label: 'System', path: '/system', roles: ['admin'] },
+    ];
+
+    const settingsItem = [
+      { icon: Settings, label: 'Settings', path: '/settings', roles: ['student', 'teacher', 'admin'] },
+    ];
+
+    let items = [...baseItems];
+    
+    if (isStudent()) {
+      items = [...items, ...studentItems];
+    } else if (isTeacher()) {
+      items = [...items, ...teacherItems];
+    } else if (isAdmin()) {
+      items = [...items, ...adminItems];
+    }
+    
+    items = [...items, ...settingsItem];
+    
+    // Filter items based on user role
+    return items.filter(item => 
+      item.roles.includes(userRole) || item.roles.includes('*')
+    );
+  };
+
+  const menuItems = getMenuItems();
 
   return (
     <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">

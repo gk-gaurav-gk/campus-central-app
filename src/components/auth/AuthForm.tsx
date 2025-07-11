@@ -160,39 +160,48 @@ const AuthForm = () => {
               </Select>
             </div>
 
-            {/* Role Selector */}
-            <div className="flex justify-center space-x-1 mb-8 p-1 bg-muted rounded-lg">
-              <Button
-                variant={selectedRole === 'student' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setSelectedRole('student')}
-                className="flex-1 rounded-md"
-                type="button"
-              >
-                <Users className="h-4 w-4 mr-2" />
-                Student
-              </Button>
-              <Button
-                variant={selectedRole === 'teacher' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setSelectedRole('teacher')}
-                className="flex-1 rounded-md"
-                type="button"
-              >
-                <UserCheck className="h-4 w-4 mr-2" />
-                Teacher
-              </Button>
-              <Button
-                variant={selectedRole === 'admin' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setSelectedRole('admin')}
-                className="flex-1 rounded-md"
-                type="button"
-              >
-                <BookOpen className="h-4 w-4 mr-2" />
-                Admin
-              </Button>
-            </div>
+            {/* Role Selector - Only shown during signup */}
+            {isSignUp && (
+              <div className="mb-8">
+                <div className="mb-4">
+                  <p className="text-sm text-muted-foreground text-center">
+                    Select your role (this will be auto-detected from your email domain)
+                  </p>
+                </div>
+                <div className="flex justify-center space-x-1 p-1 bg-muted rounded-lg">
+                  <Button
+                    variant={selectedRole === 'student' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setSelectedRole('student')}
+                    className="flex-1 rounded-md"
+                    type="button"
+                  >
+                    <Users className="h-4 w-4 mr-2" />
+                    Student
+                  </Button>
+                  <Button
+                    variant={selectedRole === 'teacher' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setSelectedRole('teacher')}
+                    className="flex-1 rounded-md"
+                    type="button"
+                  >
+                    <UserCheck className="h-4 w-4 mr-2" />
+                    Teacher
+                  </Button>
+                  <Button
+                    variant={selectedRole === 'admin' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setSelectedRole('admin')}
+                    className="flex-1 rounded-md"
+                    type="button"
+                  >
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Admin
+                  </Button>
+                </div>
+              </div>
+            )}
 
             {/* Google Sign In Button */}
             <Button 
