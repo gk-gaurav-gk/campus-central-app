@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,12 +10,20 @@ interface UserProfile {
   last_name: string | null;
   role: string | null;
   avatar_url: string | null;
+  phone: string | null;
+  job_title: string | null;
+  department: string | null;
+  timezone: string | null;
+  language: string | null;
+  theme: string | null;
   student_id: string | null;
   teacher_id: string | null;
   grade_level: string | null;
   subject_specialization: string | null;
   academic_year: string | null;
   status: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 interface AuthState {
