@@ -84,7 +84,7 @@ const AppSidebar = () => {
                   isActive
                 }) => `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 ${isActive ? 'bg-primary text-primary-foreground shadow-lg' : 'hover:bg-accent hover:text-accent-foreground'}`}>
                       <item.icon className="h-5 w-5" />
-                      {!collapsed && <span className="font-medium text-black">{item.title}</span>}
+                      {!collapsed && <span className="text-black font-normal">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>)}
