@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { Bell, Search, User, Settings, UserCog } from 'lucide-react';
+import { Bell, Search, User, Settings, UserCog, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useRoleAccess } from '@/hooks/useRoleAccess';
 import RoleChangeRequest from '@/components/auth/RoleChangeRequest';
 
-const Header = ({ user, notifications = 3 }) => {
+const Header = ({ user, notifications = 3, onLogout }) => {
   const { userRole, getRoleBadgeColor } = useRoleAccess();
   const [showRoleDialog, setShowRoleDialog] = useState(false);
   
@@ -91,9 +92,32 @@ const Header = ({ user, notifications = 3 }) => {
                 )}
               </div>
             </div>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <User className="h-5 w-5" />
-            </Button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  Profile Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem className="flex items-center gap-2">
+                  <Settings className="h-4 w-4" />
+                  Preferences
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  onClick={onLogout}
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>

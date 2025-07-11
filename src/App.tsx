@@ -20,7 +20,7 @@ import CoursesPage from "./pages/CoursesPage";
 const queryClient = new QueryClient();
 
 const AppContent = () => {
-  const { user, profile, loading } = useAuth();
+  const { user, profile, loading, signOut } = useAuth();
 
   if (loading) {
     return <LoadingScreen stage="authentication" />;
@@ -41,10 +41,20 @@ const AppContent = () => {
 
   const currentRole = profile?.role || 'student';
 
+  // Handle logout with navigation
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      // Navigation is handled automatically by auth state change
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   return (
     <BrowserRouter>
       <SidebarProvider>
-        <Layout user={userData} onLogout={() => {}}>
+        <Layout user={userData} onLogout={handleLogout}>
           <Routes>
             <Route path="/" element={<Index user={userData} />} />
             <Route path="/attendance" element={<AttendancePage userRole={currentRole} />} />
