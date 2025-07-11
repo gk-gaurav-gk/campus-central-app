@@ -1223,6 +1223,51 @@ export type Database = {
           },
         ]
       }
+      user_role_assignments: {
+        Row: {
+          assigned_by: string | null
+          created_at: string | null
+          id: string
+          new_role: Database["public"]["Enums"]["user_role"]
+          previous_role: Database["public"]["Enums"]["user_role"] | null
+          reason: string | null
+          user_id: string | null
+        }
+        Insert: {
+          assigned_by?: string | null
+          created_at?: string | null
+          id?: string
+          new_role: Database["public"]["Enums"]["user_role"]
+          previous_role?: Database["public"]["Enums"]["user_role"] | null
+          reason?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          assigned_by?: string | null
+          created_at?: string | null
+          id?: string
+          new_role?: Database["public"]["Enums"]["user_role"]
+          previous_role?: Database["public"]["Enums"]["user_role"] | null
+          reason?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_role_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_role_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_settings: {
         Row: {
           created_at: string
@@ -1403,6 +1448,10 @@ export type Database = {
         Args: { attempt_id_param: string }
         Returns: undefined
       }
+      get_user_role: {
+        Args: { user_id: string }
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
       has_any_role: {
         Args: {
           _user_id: string
@@ -1414,6 +1463,13 @@ export type Database = {
         Args: {
           _user_id: string
           _role: Database["public"]["Enums"]["user_role"]
+        }
+        Returns: boolean
+      }
+      user_has_role: {
+        Args: {
+          user_id: string
+          required_role: Database["public"]["Enums"]["user_role"]
         }
         Returns: boolean
       }
