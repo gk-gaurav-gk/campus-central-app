@@ -1,9 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Hero Dashboard Design System - Vibrant & Interactive
 All colors MUST be HSL.
+Typography: Comfortaa for headlines, Inter for body
+Color Palette: Teal→Blue gradients, Coral→Pink accents
 */
 
 @layer base {
@@ -17,13 +21,25 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 215 25% 27%;
 
-    --primary: 210 100% 50%;
+    /* Hero Dashboard Primary Colors - Teal to Blue */
+    --primary: 180 70% 45%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 210 100% 65%;
+    --primary-glow: 200 80% 55%;
 
-    --secondary: 146 70% 45%;
+    /* Secondary Colors - Emerald accents */
+    --secondary: 160 65% 50%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-glow: 146 60% 60%;
+    --secondary-glow: 160 60% 65%;
+
+    /* Coral accent colors */
+    --coral: 15 85% 65%;
+    --coral-foreground: 0 0% 100%;
+    --coral-glow: 15 75% 75%;
+
+    /* Pink accent colors */
+    --pink: 330 75% 70%;
+    --pink-foreground: 0 0% 100%;
+    --pink-glow: 330 65% 80%;
 
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
@@ -38,14 +54,19 @@ All colors MUST be HSL.
     --input: 214 32% 91%;
     --ring: 210 100% 50%;
 
-    /* Educational gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(210 100% 50%), hsl(210 100% 65%));
-    --gradient-secondary: linear-gradient(135deg, hsl(146 70% 45%), hsl(146 60% 60%));
-    --gradient-accent: linear-gradient(135deg, hsl(45 100% 70%), hsl(45 90% 80%));
+    /* Hero Dashboard Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(180 70% 45%), hsl(200 80% 55%));
+    --gradient-secondary: linear-gradient(135deg, hsl(160 65% 50%), hsl(160 60% 65%));
+    --gradient-coral: linear-gradient(135deg, hsl(15 85% 65%), hsl(15 75% 75%));
+    --gradient-pink: linear-gradient(135deg, hsl(330 75% 70%), hsl(330 65% 80%));
+    --gradient-glass: linear-gradient(135deg, hsla(180 70% 45% / 0.1), hsla(200 80% 55% / 0.05));
     
-    /* Shadows */
-    --shadow-elegant: 0 10px 30px -10px hsl(210 100% 50% / 0.2);
-    --shadow-glow: 0 0 40px hsl(210 100% 65% / 0.3);
+    /* Shadows & Glows */
+    --shadow-elegant: 0 10px 30px -10px hsl(180 70% 45% / 0.3);
+    --shadow-glow: 0 0 40px hsl(200 80% 55% / 0.4);
+    --shadow-card: 0 4px 20px -4px hsl(180 70% 45% / 0.1);
+    --shadow-coral: 0 0 30px hsl(15 85% 65% / 0.3);
+    --shadow-pink: 0 0 30px hsl(330 75% 70% / 0.3);
     
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -114,6 +135,29 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-inter;
+  }
+
+  /* Typography Classes */
+  .font-comfortaa {
+    font-family: 'Comfortaa', sans-serif;
+  }
+
+  .font-inter {
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Glassmorphism effects */
+  .glass-card {
+    @apply backdrop-blur-md bg-white/10 border border-white/20;
+  }
+
+  /* Hover animations */
+  .hover-lift {
+    @apply transition-all duration-300 hover:scale-105 hover:shadow-glow;
+  }
+
+  .hover-float {
+    @apply transition-transform duration-300 hover:-translate-y-1;
   }
 }

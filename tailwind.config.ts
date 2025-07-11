@@ -34,6 +34,16 @@ export default {
 					foreground: 'hsl(var(--secondary-foreground))',
 					glow: 'hsl(var(--secondary-glow))'
 				},
+				coral: {
+					DEFAULT: 'hsl(var(--coral))',
+					foreground: 'hsl(var(--coral-foreground))',
+					glow: 'hsl(var(--coral-glow))'
+				},
+				pink: {
+					DEFAULT: 'hsl(var(--pink))',
+					foreground: 'hsl(var(--pink-foreground))',
+					glow: 'hsl(var(--pink-glow))'
+				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
 					foreground: 'hsl(var(--destructive-foreground))'
@@ -70,14 +80,23 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
+			fontFamily: {
+				'comfortaa': ['Comfortaa', 'sans-serif'],
+				'inter': ['Inter', 'sans-serif'],
+			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-secondary': 'var(--gradient-secondary)',
-				'gradient-accent': 'var(--gradient-accent)'
+				'gradient-coral': 'var(--gradient-coral)',
+				'gradient-pink': 'var(--gradient-pink)',
+				'gradient-glass': 'var(--gradient-glass)'
 			},
 			boxShadow: {
 				'elegant': 'var(--shadow-elegant)',
-				'glow': 'var(--shadow-glow)'
+				'glow': 'var(--shadow-glow)',
+				'card': 'var(--shadow-card)',
+				'coral': 'var(--shadow-coral)',
+				'pink': 'var(--shadow-pink)'
 			},
 			transitionTimingFunction: {
 				'smooth': 'var(--transition-smooth)'
