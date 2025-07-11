@@ -12,7 +12,7 @@ const DemoCredentialsPanel = ({ onFillCredentials, isVisible = false }) => {
     {
       role: 'student',
       icon: Users,
-      email: 'john@student.college.edu',
+      email: 'student.demo@gmail.com',
       password: 'demo123',
       name: 'John Student',
       description: 'Access student dashboard with course materials, assignments, and grades',
@@ -21,7 +21,7 @@ const DemoCredentialsPanel = ({ onFillCredentials, isVisible = false }) => {
     {
       role: 'teacher',
       icon: UserCheck,
-      email: 'sarah@faculty.college.edu',
+      email: 'teacher.demo@gmail.com',
       password: 'demo123',
       name: 'Sarah Professor',
       description: 'Manage courses, create assignments, grade students, and view analytics',
@@ -30,7 +30,7 @@ const DemoCredentialsPanel = ({ onFillCredentials, isVisible = false }) => {
     {
       role: 'admin',
       icon: BookOpen,
-      email: 'admin@admin.college.edu',
+      email: 'admin.demo@gmail.com',
       password: 'demo123',
       name: 'Admin User',
       description: 'Full system access, user management, and institutional oversight',
