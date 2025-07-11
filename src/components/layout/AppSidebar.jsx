@@ -1,120 +1,61 @@
+
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
-import { Home, Calendar, Users, BookOpen, CheckSquare, BarChart3, MessageSquare, CreditCard, Car, Star, Award, GraduationCap, Settings, User } from 'lucide-react';
-const menuItems = [{
-  title: 'Dashboard',
-  url: '/',
-  icon: Home
-}, {
-  title: 'Attendance',
-  url: '/attendance',
-  icon: CheckSquare
-}, {
-  title: 'Timetable',
-  url: '/timetable',
-  icon: Calendar
-}, {
-  title: 'Groups',
-  url: '/groups',
-  icon: Users
-}, {
-  title: 'Content',
-  url: '/content',
-  icon: BookOpen
-}, {
-  title: 'Assessments',
-  url: '/assessments',
-  icon: Award
-}, {
-  title: 'Messages',
-  url: '/messages',
-  icon: MessageSquare
-}, {
-  title: 'Fees',
-  url: '/fees',
-  icon: CreditCard
-}, {
-  title: 'Transport',
-  url: '/transport',
-  icon: Car
-}, {
-  title: 'Gamification',
-  url: '/gamification',
-  icon: Star
-}, {
-  title: 'Analytics',
-  url: '/analytics',
-  icon: BarChart3
-}, {
-  title: 'Alumni',
-  url: '/alumni',
-  icon: GraduationCap
-}];
+import { NavLink } from 'react-router-dom';
+import { 
+  Home, 
+  UserCheck, 
+  BookOpen, 
+  BarChart3, 
+  Users, 
+  Settings,
+  GraduationCap,
+  ClipboardList
+} from 'lucide-react';
+
 const AppSidebar = () => {
-  const {
-    collapsed
-  } = useSidebar();
-  const location = useLocation();
-  const currentPath = location.pathname;
-  const isActive = path => currentPath === path;
-  return <Sidebar className="border-r border-border/50 bg-card/30 backdrop-blur-md">
-      <SidebarContent>
-        <div className="p-6 border-b border-border/50">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-              <GraduationCap className="h-5 w-5 text-white" />
-            </div>
-            {!collapsed && <div>
-                <h2 className="font-bold text-lg bg-gradient-primary bg-clip-text text-transparent">
-                  EduFlow
-                </h2>
-                
-              </div>}
-          </div>
-        </div>
+  const menuItems = [
+    { icon: Home, label: 'Dashboard', path: '/' },
+    { icon: UserCheck, label: 'Attendance', path: '/attendance' },
+    { icon: GraduationCap, label: 'Quizzes', path: '/quizzes' },
+    { icon: ClipboardList, label: 'Assignments', path: '/assignments' },
+    { icon: BookOpen, label: 'Courses', path: '/courses' },
+    { icon: Users, label: 'Students', path: '/students' },
+    { icon: BarChart3, label: 'Analytics', path: '/analytics' },
+    { icon: Settings, label: 'Settings', path: '/settings' },
+  ];
 
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-foreground font-semibold">Main Menu</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map(item => <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink to={item.url} end className={({
-                  isActive
-                }) => `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 ${isActive ? 'bg-primary text-primary-foreground shadow-lg' : 'hover:bg-accent hover:text-accent-foreground'}`}>
-                      <item.icon className="h-5 w-5" />
-                      {!collapsed && <span className="text-black font-normal">{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>)}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup className="mt-auto">
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <NavLink to="/profile" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition-all duration-200">
-                    <User className="h-5 w-5" />
-                    {!collapsed && <span>Profile</span>}
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <NavLink to="/settings" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition-all duration-200">
-                    <Settings className="h-5 w-5" />
-                    {!collapsed && <span>Settings</span>}
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>;
+  return (
+    <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
+      <div className="p-6 border-b border-gray-200">
+        <h1 className="text-xl font-bold text-gray-900">EduPlatform</h1>
+      </div>
+      
+      <nav className="flex-1 px-4 py-6">
+        <ul className="space-y-2">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <li key={item.path}>
+                <NavLink
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                      isActive
+                        ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    }`
+                  }
+                >
+                  <Icon className="w-5 h-5 mr-3" />
+                  {item.label}
+                </NavLink>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    </div>
+  );
 };
+
 export default AppSidebar;
