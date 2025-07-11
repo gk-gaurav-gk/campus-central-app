@@ -9,6 +9,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/useAuth";
 import AuthForm from "./components/auth/AuthForm";
 import Layout from "./components/layout/Layout";
+import LoadingScreen from "./components/layout/LoadingScreen";
 import Index from "./pages/Index";
 import AttendancePage from "./pages/AttendancePage";
 import QuizListPage from "./pages/QuizListPage";
@@ -22,11 +23,7 @@ const AppContent = () => {
   const { user, profile, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <LoadingScreen stage="authentication" />;
   }
 
   if (!user) {

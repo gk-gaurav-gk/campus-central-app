@@ -1,13 +1,16 @@
-import React from 'react';
-import { Bell, Search, User, Settings } from 'lucide-react';
+import React, { useState } from 'react';
+import { Bell, Search, User, Settings, UserCog } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { useRoleAccess } from '@/hooks/useRoleAccess';
+import RoleChangeRequest from '@/components/auth/RoleChangeRequest';
 
 const Header = ({ user, notifications = 3 }) => {
   const { userRole, getRoleBadgeColor } = useRoleAccess();
+  const [showRoleDialog, setShowRoleDialog] = useState(false);
   
   const getRoleDisplayName = (role) => {
     switch (role) {
@@ -59,10 +62,33 @@ const Header = ({ user, notifications = 3 }) => {
               <div className="flex items-center gap-2 justify-end">
                 <Badge 
                   variant="secondary" 
-                  className={`text-xs ${getRoleBadgeColor()}`}
+                  className={`text-xs ${getRoleBadgeColor()} cursor-pointer hover:opacity-80 transition-opacity`}
+                  onClick={() => setShowRoleDialog(true)}
+                  title="Click to request role change"
                 >
                   {getRoleDisplayName(userRole || user?.role)}
                 </Badge>
+                {userRole !== 'admin' && (
+                  <Dialog open={showRoleDialog} onOpenChange={setShowRoleDialog}>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 w-6 p-0"
+                        title="Request role change"
+                      >
+                        <UserCog className="h-3 w-3" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <RoleChangeRequest
+                        currentRole={userRole || user?.role || 'student'}
+                        userEmail={user?.email || ''}
+                        onClose={() => setShowRoleDialog(false)}
+                      />
+                    </DialogContent>
+                  </Dialog>
+                )}
               </div>
             </div>
             <Button variant="ghost" size="icon" className="rounded-full">

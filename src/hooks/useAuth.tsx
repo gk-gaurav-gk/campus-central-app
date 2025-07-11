@@ -38,6 +38,8 @@ export const useAuth = (): AuthState => {
   const { toast } = useToast();
 
   useEffect(() => {
+    let isInitialized = false;
+
     // Get initial session
     const getInitialSession = async () => {
       try {
@@ -49,28 +51,35 @@ export const useAuth = (): AuthState => {
         }
       } catch (error) {
         console.error('Error getting initial session:', error);
+        // Ensure loading is false even if there's an error
+        createEmptyProfile();
       } finally {
         setLoading(false);
+        isInitialized = true;
       }
     };
 
     getInitialSession();
 
-    // Listen for auth changes
+    // Listen for auth changes - CRITICAL: Use setTimeout to prevent deadlocks
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        try {
-          setUser(session?.user || null);
-          
-          if (session?.user) {
-            await fetchUserProfile(session.user.id);
-          } else {
-            setProfile(null);
+      (event, session) => {
+        console.log('Auth state change:', event, session?.user?.email);
+        
+        // Update user immediately (synchronous)
+        setUser(session?.user || null);
+        
+        if (session?.user) {
+          // Use setTimeout to defer async operations and prevent deadlocks
+          setTimeout(() => {
+            fetchUserProfile(session.user.id);
+          }, 0);
+        } else {
+          // Clear profile immediately
+          setProfile(null);
+          if (isInitialized) {
+            setLoading(false);
           }
-        } catch (error) {
-          console.error('Error in auth state change:', error);
-        } finally {
-          setLoading(false);
         }
       }
     );
@@ -123,14 +132,28 @@ export const useAuth = (): AuthState => {
     }
   };
 
+  // Smart role detection based on email patterns
+  const detectRoleFromEmail = (email: string): string => {
+    if (email.includes('@admin.') || email.includes('admin@') || email.includes('.admin@')) {
+      return 'admin';
+    }
+    if (email.includes('@teacher.') || email.includes('@faculty.') || email.includes('teacher@') || email.includes('faculty@')) {
+      return 'teacher';
+    }
+    return 'student'; // Default fallback
+  };
+
   const createFallbackProfile = (userId: string) => {
+    const userEmail = user?.email || '';
+    const detectedRole = detectRoleFromEmail(userEmail);
+    
     const fallbackProfile: UserProfile = {
       id: userId,
-      email: user?.email || null,
+      email: userEmail || null,
       first_name: user?.user_metadata?.first_name || null,
       last_name: user?.user_metadata?.last_name || null,
-      role: 'student', // Default role
-      avatar_url: null,
+      role: detectedRole,
+      avatar_url: user?.user_metadata?.avatar_url || null,
       phone: null,
       job_title: null,
       department: null,
@@ -141,6 +164,27 @@ export const useAuth = (): AuthState => {
       updated_at: new Date().toISOString(),
     };
     setProfile(fallbackProfile);
+  };
+
+  const createEmptyProfile = () => {
+    // Create minimal profile to prevent loading indefinitely
+    const emptyProfile: UserProfile = {
+      id: '',
+      email: null,
+      first_name: null,
+      last_name: null,
+      role: 'student',
+      avatar_url: null,
+      phone: null,
+      job_title: null,
+      department: null,
+      timezone: 'UTC',
+      language: 'en',
+      theme: 'light',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    setProfile(emptyProfile);
   };
 
   const signIn = async (email: string, password: string) => {
