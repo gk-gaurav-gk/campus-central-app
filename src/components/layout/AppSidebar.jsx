@@ -69,7 +69,7 @@ const AppSidebar = () => {
                 <h2 className="font-bold text-lg bg-gradient-primary bg-clip-text text-transparent">
                   EduFlow
                 </h2>
-                <p className="text-xs text-muted-foreground">College ERP</p>
+                
               </div>}
           </div>
         </div>
