@@ -67,6 +67,7 @@ const VideoSessions = () => {
 
       const sessionsWithDetails = data?.map(session => ({
         ...session,
+        status: session.status as 'scheduled' | 'live' | 'ended' | 'cancelled',
         instructor_name: session.profiles 
           ? `${session.profiles.first_name || ''} ${session.profiles.last_name || ''}`.trim()
           : 'Unknown',

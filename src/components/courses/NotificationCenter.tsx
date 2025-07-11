@@ -42,7 +42,12 @@ const NotificationCenter = () => {
         .limit(50);
 
       if (error) throw error;
-      setNotifications(data || []);
+      const typedNotifications = (data || []).map(notification => ({
+        ...notification,
+        type: notification.type as 'email' | 'sms' | 'push' | 'system',
+        status: notification.status as 'pending' | 'sent' | 'delivered' | 'failed',
+      }));
+      setNotifications(typedNotifications);
     } catch (error) {
       console.error('Error fetching notifications:', error);
       toast({

@@ -67,6 +67,7 @@ const EventCalendar = () => {
 
       const eventsWithDetails = data?.map(event => ({
         ...event,
+        event_type: event.event_type as 'class' | 'exam' | 'assignment_due' | 'meeting' | 'other',
         organizer_name: event.profiles 
           ? `${event.profiles.first_name || ''} ${event.profiles.last_name || ''}`.trim()
           : 'Unknown',
