@@ -16,12 +16,6 @@ interface UserProfile {
   timezone: string | null;
   language: string | null;
   theme: string | null;
-  student_id?: string | null;
-  teacher_id?: string | null;
-  grade_level?: string | null;
-  subject_specialization?: string | null;
-  academic_year?: string | null;
-  status?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -101,12 +95,6 @@ export const useAuth = (): AuthState => {
         timezone: data.timezone,
         language: data.language,
         theme: data.theme,
-        student_id: (data as any).student_id || null,
-        teacher_id: (data as any).teacher_id || null,
-        grade_level: (data as any).grade_level || null,
-        subject_specialization: (data as any).subject_specialization || null,
-        academic_year: (data as any).academic_year || null,
-        status: (data as any).status || null,
         created_at: data.created_at,
         updated_at: data.updated_at,
       };
