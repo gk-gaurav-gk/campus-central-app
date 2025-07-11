@@ -1450,7 +1450,7 @@ export type Database = {
         | "picture_choice"
       quiz_type: "trivia" | "personality" | "graded" | "survey" | "poll"
       task_status: "pending" | "in_progress" | "completed" | "cancelled"
-      user_role: "admin" | "crm_user" | "viewer"
+      user_role: "admin" | "crm_user" | "viewer" | "student" | "teacher"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1613,7 +1613,7 @@ export const Constants = {
       ],
       quiz_type: ["trivia", "personality", "graded", "survey", "poll"],
       task_status: ["pending", "in_progress", "completed", "cancelled"],
-      user_role: ["admin", "crm_user", "viewer"],
+      user_role: ["admin", "crm_user", "viewer", "student", "teacher"],
     },
   },
 } as const
