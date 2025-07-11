@@ -1,15 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { useAuth } from "@/hooks/useAuth";
-import AuthForm from "./components/auth/AuthForm";
 import Layout from "./components/layout/Layout";
-import LoadingScreen from "./components/layout/LoadingScreen";
 import Index from "./pages/Index";
 import AttendancePage from "./pages/AttendancePage";
 import QuizListPage from "./pages/QuizListPage";
@@ -20,41 +17,47 @@ import CoursesPage from "./pages/CoursesPage";
 const queryClient = new QueryClient();
 
 const AppContent = () => {
-  const { user, profile, loading, signOut } = useAuth();
+  // Demo mode - no authentication required
+  const [currentRole, setCurrentRole] = useState('student');
 
-  if (loading) {
-    return <LoadingScreen stage="authentication" />;
-  }
-
-  if (!user) {
-    return <AuthForm />;
-  }
-
-  // Create user object compatible with existing components
-  const userData = {
-    name: profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : user.email || 'User',
-    email: user.email || '',
-    role: profile?.role || 'student',
-    avatar: profile?.avatar_url || null,
-    id: user.id
+  // Mock user data based on current role
+  const getUserData = (role) => {
+    const userData = {
+      student: {
+        name: 'John Student',
+        email: 'student.demo@gmail.com',
+        role: 'student',
+        avatar: null,
+        id: '11111111-1111-1111-1111-111111111111'
+      },
+      teacher: {
+        name: 'Sarah Professor',
+        email: 'teacher.demo@gmail.com',
+        role: 'teacher',
+        avatar: null,
+        id: '22222222-2222-2222-2222-222222222222'
+      },
+      admin: {
+        name: 'Admin User',
+        email: 'admin.demo@gmail.com',
+        role: 'admin',
+        avatar: null,
+        id: '33333333-3333-3333-3333-333333333333'
+      }
+    };
+    return userData[role] || userData.student;
   };
 
-  const currentRole = profile?.role || 'student';
-
-  // Handle logout with navigation
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      // Navigation is handled automatically by auth state change
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
+  const userData = getUserData(currentRole);
 
   return (
     <BrowserRouter>
       <SidebarProvider>
-        <Layout user={userData} onLogout={handleLogout}>
+        <Layout 
+          user={userData} 
+          currentRole={currentRole}
+          onRoleChange={setCurrentRole}
+        >
           <Routes>
             <Route path="/" element={<Index user={userData} />} />
             <Route path="/attendance" element={<AttendancePage userRole={currentRole} />} />
