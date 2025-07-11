@@ -16,12 +16,12 @@ interface UserProfile {
   timezone: string | null;
   language: string | null;
   theme: string | null;
-  student_id: string | null;
-  teacher_id: string | null;
-  grade_level: string | null;
-  subject_specialization: string | null;
-  academic_year: string | null;
-  status: string | null;
+  student_id?: string | null;
+  teacher_id?: string | null;
+  grade_level?: string | null;
+  subject_specialization?: string | null;
+  academic_year?: string | null;
+  status?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -87,7 +87,31 @@ export const useAuth = (): AuthState => {
         return;
       }
 
-      setProfile(data);
+      // Ensure all required fields are present with defaults
+      const profileData: UserProfile = {
+        id: data.id,
+        email: data.email,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        role: data.role,
+        avatar_url: data.avatar_url,
+        phone: data.phone,
+        job_title: data.job_title,
+        department: data.department,
+        timezone: data.timezone,
+        language: data.language,
+        theme: data.theme,
+        student_id: data.student_id || null,
+        teacher_id: data.teacher_id || null,
+        grade_level: data.grade_level || null,
+        subject_specialization: data.subject_specialization || null,
+        academic_year: data.academic_year || null,
+        status: data.status || null,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+      };
+
+      setProfile(profileData);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
