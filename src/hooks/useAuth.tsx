@@ -150,6 +150,7 @@ export const useAuth = (): AuthState => {
         password,
         options: {
           data: userData,
+          emailRedirectTo: `${window.location.origin}/`,
         },
       });
 
