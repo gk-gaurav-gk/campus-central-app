@@ -61,12 +61,13 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
 
 export const useRoleAccess = () => {
   const { profile } = useAuth();
-  const userRole = profile?.role as UserRole;
+  
+  // Get user role, default to 'student' if not set or invalid
+  const userRole: UserRole = profile?.role && ['student', 'teacher', 'admin'].includes(profile.role) 
+    ? profile.role as UserRole 
+    : 'student';
 
   const hasPermission = (module: string, action: 'view' | 'create' | 'edit' | 'delete'): boolean => {
-    if (!userRole || !ROLE_PERMISSIONS[userRole]) {
-      return false;
-    }
 
     const permissions = ROLE_PERMISSIONS[userRole];
     
