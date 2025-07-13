@@ -1,4 +1,4 @@
-import { useAuth } from './useAuth';
+import { useRole } from '../contexts/RoleContext';
 
 type UserRole = 'student' | 'teacher' | 'admin';
 type Permission = {
@@ -167,12 +167,10 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
 };
 
 export const useRoleAccess = () => {
-  const { profile } = useAuth();
+  const { currentRole, user } = useRole();
   
-  // Get user role, default to 'student' if not set or invalid
-  const userRole: UserRole = profile?.role && ['student', 'teacher', 'admin'].includes(profile.role) 
-    ? profile.role as UserRole 
-    : 'student';
+  // Get user role from context
+  const userRole: UserRole = currentRole;
 
   const hasPermission = (module: string, action: 'view' | 'create' | 'edit' | 'delete'): boolean => {
 
@@ -227,7 +225,7 @@ export const useRoleAccess = () => {
   // Context-aware permission methods
   const canManageOwnContent = (contentCreatorId: string, module: string, action: 'edit' | 'delete'): boolean => {
     if (userRole === 'admin') return true;
-    if (userRole === 'teacher' && contentCreatorId === profile?.id) {
+    if (userRole === 'teacher' && contentCreatorId === user?.id) {
       return hasPermission(module, action);
     }
     return false;
@@ -235,14 +233,14 @@ export const useRoleAccess = () => {
 
   const canAccessCourse = (courseId: string, instructorId?: string): boolean => {
     if (userRole === 'admin') return true;
-    if (userRole === 'teacher' && instructorId === profile?.id) return true;
+    if (userRole === 'teacher' && instructorId === user?.id) return true;
     if (userRole === 'student') return canAccess('courses'); // Students can view courses they're enrolled in
     return false;
   };
 
   const canGradeStudent = (courseInstructorId?: string): boolean => {
     if (userRole === 'admin') return true;
-    if (userRole === 'teacher' && courseInstructorId === profile?.id) {
+    if (userRole === 'teacher' && courseInstructorId === user?.id) {
       return hasPermission('grading', 'create');
     }
     return false;
