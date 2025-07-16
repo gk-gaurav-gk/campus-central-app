@@ -16,6 +16,7 @@ import QuizListPage from "./pages/QuizListPage";
 import NotFound from "./pages/NotFound";
 import AssignmentsPage from "./pages/AssignmentsPage";
 import CoursesPage from "./pages/CoursesPage";
+import CourseDetailPage from "./pages/CourseDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,7 @@ const AppContent = () => {
               <Route path="/quizzes" element={<QuizListPage />} />
               <Route path="/assignments" element={<AssignmentsPage />} />
               <Route path="/courses" element={<CoursesPage />} />
+              <Route path="/courses/:courseId" element={<CourseDetailPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>
