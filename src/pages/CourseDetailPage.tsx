@@ -23,10 +23,10 @@ import {
 } from 'lucide-react';
 import CourseResources from '@/components/courses/CourseResources';
 import CourseAssignments from '@/components/courses/CourseAssignments';
-import CourseMessages from '@/components/courses/CourseMessages';
 import CourseAttendance from '@/components/courses/CourseAttendance';
 import CourseVideoSessions from '@/components/courses/CourseVideoSessions';
 import CourseAnnouncements from '@/components/courses/CourseAnnouncements';
+import CourseGroups from '@/components/courses/CourseGroups';
 
 interface Course {
   id: string;
@@ -96,21 +96,19 @@ const CourseDetailPage = () => {
 
   const getTabsForRole = () => {
     const baseTabs = [
-      { value: 'resources', label: 'Resources', icon: FileText },
-      { value: 'assignments', label: 'Assignments', icon: ClipboardList },
-      { value: 'messages', label: 'Messages', icon: MessageSquare },
+      { value: 'content', label: 'Content', icon: FileText },
+      { value: 'recording', label: 'Recording', icon: Video },
+      { value: 'assessments', label: 'Assessments', icon: ClipboardList },
       { value: 'announcements', label: 'Announcements', icon: Bell },
     ];
 
     if (currentRole === 'teacher' || currentRole === 'admin') {
       baseTabs.push(
-        { value: 'attendance', label: 'Attendance', icon: UserCheck },
-        { value: 'video', label: 'Video Classes', icon: Video }
+        { value: 'groups', label: 'Groups', icon: Users },
+        { value: 'attendance', label: 'Attendance', icon: UserCheck }
       );
     } else if (currentRole === 'student') {
-      baseTabs.push(
-        { value: 'video', label: 'Video Classes', icon: Video }
-      );
+      // Students don't see groups and attendance
     }
 
     return baseTabs;
@@ -213,16 +211,16 @@ const CourseDetailPage = () => {
             ))}
           </TabsList>
 
-          <TabsContent value="resources" className="mt-6">
+          <TabsContent value="content" className="mt-6">
             <CourseResources courseId={course.id} />
           </TabsContent>
 
-          <TabsContent value="assignments" className="mt-6">
-            <CourseAssignments courseId={course.id} />
+          <TabsContent value="recording" className="mt-6">
+            <CourseVideoSessions courseId={course.id} />
           </TabsContent>
 
-          <TabsContent value="messages" className="mt-6">
-            <CourseMessages courseId={course.id} />
+          <TabsContent value="assessments" className="mt-6">
+            <CourseAssignments courseId={course.id} />
           </TabsContent>
 
           <TabsContent value="announcements" className="mt-6">
@@ -230,14 +228,16 @@ const CourseDetailPage = () => {
           </TabsContent>
 
           {(currentRole === 'teacher' || currentRole === 'admin') && (
-            <TabsContent value="attendance" className="mt-6">
-              <CourseAttendance courseId={course.id} />
-            </TabsContent>
+            <>
+              <TabsContent value="groups" className="mt-6">
+                <CourseGroups courseId={course.id} />
+              </TabsContent>
+              
+              <TabsContent value="attendance" className="mt-6">
+                <CourseAttendance courseId={course.id} />
+              </TabsContent>
+            </>
           )}
-
-          <TabsContent value="video" className="mt-6">
-            <CourseVideoSessions courseId={course.id} />
-          </TabsContent>
         </Tabs>
       </div>
     </div>

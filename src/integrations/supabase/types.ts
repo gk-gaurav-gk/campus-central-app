@@ -131,6 +131,71 @@ export type Database = {
           },
         ]
       }
+      attendance_records: {
+        Row: {
+          attendance_date: string
+          course_id: string
+          created_at: string
+          group_id: string | null
+          id: string
+          is_present: boolean
+          marked_by: string
+          remarks: string | null
+          student_id: string
+        }
+        Insert: {
+          attendance_date?: string
+          course_id: string
+          created_at?: string
+          group_id?: string | null
+          id?: string
+          is_present?: boolean
+          marked_by: string
+          remarks?: string | null
+          student_id: string
+        }
+        Update: {
+          attendance_date?: string
+          course_id?: string
+          created_at?: string
+          group_id?: string | null
+          id?: string
+          is_present?: boolean
+          marked_by?: string
+          remarks?: string | null
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_records_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_records_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "course_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_records_marked_by_fkey"
+            columns: ["marked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_records_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_groups: {
         Row: {
           course_id: string | null
@@ -463,6 +528,123 @@ export type Database = {
           },
         ]
       }
+      course_groups: {
+        Row: {
+          course_id: string
+          created_at: string
+          description: string | null
+          group_type: string
+          id: string
+          max_members: number | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          description?: string | null
+          group_type?: string
+          id?: string
+          max_members?: number | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          description?: string | null
+          group_type?: string
+          id?: string
+          max_members?: number | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_groups_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_resources: {
+        Row: {
+          category: string | null
+          course_id: string
+          created_at: string
+          description: string | null
+          download_count: number | null
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          group_id: string | null
+          id: string
+          is_downloadable: boolean | null
+          title: string
+          updated_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          category?: string | null
+          course_id: string
+          created_at?: string
+          description?: string | null
+          download_count?: number | null
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          group_id?: string | null
+          id?: string
+          is_downloadable?: boolean | null
+          title: string
+          updated_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          category?: string | null
+          course_id?: string
+          created_at?: string
+          description?: string | null
+          download_count?: number | null
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          group_id?: string | null
+          id?: string
+          is_downloadable?: boolean | null
+          title?: string
+          updated_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_resources_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_resources_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "course_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_resources_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           academic_year: string | null
@@ -748,6 +930,45 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_memberships: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          role: string | null
+          student_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          role?: string | null
+          student_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          role?: string | null
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_memberships_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "course_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_memberships_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1165,6 +1386,50 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      student_profiles: {
+        Row: {
+          admission_year: number | null
+          batch: string | null
+          created_at: string
+          department: string | null
+          id: string
+          roll_number: string
+          semester: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admission_year?: number | null
+          batch?: string | null
+          created_at?: string
+          department?: string | null
+          id?: string
+          roll_number: string
+          semester?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admission_year?: number | null
+          batch?: string | null
+          created_at?: string
+          department?: string | null
+          id?: string
+          roll_number?: string
+          semester?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tasks: {
         Row: {
