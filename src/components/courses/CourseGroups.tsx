@@ -93,7 +93,19 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
       // Load course groups from database
       const { data: groupsData, error: groupsError } = await supabase
         .from('course_groups')
-        .select('*')
+        .select(`
+          *,
+          group_memberships (
+            id,
+            student_id,
+            profiles (
+              id,
+              first_name,
+              last_name,
+              email
+            )
+          )
+        `)
         .eq('course_id', courseId);
 
       if (groupsError) throw groupsError;
@@ -105,14 +117,59 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
         description: group.description || '',
         group_type: group.group_type,
         max_members: group.max_members || 30,
-        member_count: 0 // Will be calculated from memberships
+        member_count: group.group_memberships?.length || 0
       }));
 
       setGroups(transformedGroups);
       
-      // Using mock students for now - in a real app, you'd fetch enrolled students
-      setStudents(mockStudents);
-      setAvailableStudents(mockStudents.filter(student => !['1', '2', '3'].includes(student.id)));
+      // Load enrolled students for this course
+      const { data: enrolledStudents, error: studentsError } = await supabase
+        .from('course_enrollments')
+        .select(`
+          student_id,
+          profiles (
+            id,
+            first_name,
+            last_name,
+            email,
+            student_profiles (
+              roll_number,
+              department,
+              batch,
+              semester
+            )
+          )
+        `)
+        .eq('course_id', courseId);
+
+      if (studentsError) throw studentsError;
+
+      // Transform enrolled students data
+      const transformedStudents = enrolledStudents.map(enrollment => {
+        const profile = enrollment.profiles;
+        const studentProfile = profile.student_profiles?.[0];
+        
+        return {
+          id: profile.id,
+          name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'Unknown Student',
+          rollNumber: studentProfile?.roll_number || 'N/A',
+          email: profile.email || '',
+          department: studentProfile?.department || 'N/A',
+          batch: studentProfile?.batch || 'N/A',
+          semester: studentProfile?.semester || 1
+        };
+      });
+
+      setStudents(transformedStudents);
+      
+      // Get students not assigned to any group
+      const assignedStudentIds = groupsData.flatMap(group => 
+        (group.group_memberships || []).map(membership => membership.student_id)
+      );
+      
+      setAvailableStudents(transformedStudents.filter(student => 
+        !assignedStudentIds.includes(student.id)
+      ));
     } catch (error) {
       console.error('Error loading data:', error);
       toast({
@@ -171,14 +228,21 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
 
   const handleAddStudentsToGroup = async (selectedStudentIds: string[]) => {
     try {
-      // Mock implementation
-      const updatedGroups = groups.map(group => 
-        group.id === selectedGroup 
-          ? { ...group, member_count: group.member_count + selectedStudentIds.length }
-          : group
-      );
+      // Add students to group in database
+      const membershipData = selectedStudentIds.map(studentId => ({
+        group_id: selectedGroup,
+        student_id: studentId
+      }));
+
+      const { error } = await supabase
+        .from('group_memberships')
+        .insert(membershipData);
+
+      if (error) throw error;
+
+      // Reload data to get updated counts
+      await loadData();
       
-      setGroups(updatedGroups);
       setShowAddStudents(false);
       setSelectedGroup('');
       
@@ -248,7 +312,7 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
         </Card>
       </div>
 
-      {/* Groups Management */}
+      {/* Groups by Type Tabs */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Course Groups</CardTitle>
@@ -310,47 +374,61 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {groups.map((group) => (
-                <div 
-                  key={group.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                >
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-3">
-                      <h4 className="font-medium">{group.name}</h4>
-                      <Badge variant="outline">
-                        {group.group_type}
-                      </Badge>
-                      <Badge variant="secondary">
-                        {group.member_count}/{group.max_members} students
-                      </Badge>
+            <div className="space-y-6">
+              {/* Group by Type */}
+              {['section', 'lab', 'tutorial'].map(type => {
+                const typeGroups = groups.filter(g => g.group_type === type);
+                if (typeGroups.length === 0) return null;
+                
+                return (
+                  <div key={type} className="space-y-3">
+                    <h3 className="text-lg font-semibold capitalize flex items-center gap-2">
+                      {type} Groups
+                      <Badge variant="outline">{typeGroups.length}</Badge>
+                    </h3>
+                    <div className="space-y-3">
+                      {typeGroups.map((group) => (
+                        <div 
+                          key={group.id}
+                          className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                        >
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-3">
+                              <h4 className="font-medium">{group.name}</h4>
+                              <Badge variant="secondary">
+                                {group.member_count}/{group.max_members} students
+                              </Badge>
+                            </div>
+                            {group.description && (
+                              <p className="text-sm text-muted-foreground">{group.description}</p>
+                            )}
+                          </div>
+                          
+                          {(currentRole === 'teacher' || currentRole === 'admin') && (
+                            <div className="flex items-center space-x-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedGroup(group.id);
+                                  setShowAddStudents(true);
+                                }}
+                                disabled={availableStudents.length === 0}
+                              >
+                                <UserPlus className="w-4 h-4 mr-2" />
+                                Add Students
+                              </Button>
+                              <Button variant="outline" size="sm">
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
-                    {group.description && (
-                      <p className="text-sm text-muted-foreground">{group.description}</p>
-                    )}
                   </div>
-                  
-                  {(currentRole === 'teacher' || currentRole === 'admin') && (
-                    <div className="flex items-center space-x-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          setSelectedGroup(group.id);
-                          setShowAddStudents(true);
-                        }}
-                      >
-                        <UserPlus className="w-4 h-4 mr-2" />
-                        Add Students
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>

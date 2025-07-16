@@ -65,6 +65,7 @@ const AppSidebar = () => {
       { icon: GraduationCap, label: 'Quizzes', path: '/quizzes', roles: ['admin'] },
       { icon: ClipboardList, label: 'Assignments', path: '/assignments', roles: ['admin'] },
       { icon: BookOpen, label: 'Courses', path: '/courses', roles: ['admin'] },
+      { icon: Users, label: 'Student Management', path: '/admin/students', roles: ['admin'] },
       { icon: Users, label: 'Users', path: '/users', roles: ['admin'] },
       { icon: Video, label: 'Video Classes', path: '/video-classes', roles: ['admin'] },
       { icon: MessageSquare, label: 'Messages', path: '/messages', roles: ['admin'] },
