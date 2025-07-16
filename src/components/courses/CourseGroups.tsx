@@ -90,8 +90,27 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
   const loadData = async () => {
     setLoading(true);
     try {
-      // Using mock data for now
-      setGroups(mockGroups);
+      // Load course groups from database
+      const { data: groupsData, error: groupsError } = await supabase
+        .from('course_groups')
+        .select('*')
+        .eq('course_id', courseId);
+
+      if (groupsError) throw groupsError;
+
+      // Transform database data to match our interface
+      const transformedGroups = groupsData.map(group => ({
+        id: group.id,
+        name: group.name,
+        description: group.description || '',
+        group_type: group.group_type,
+        max_members: group.max_members || 30,
+        member_count: 0 // Will be calculated from memberships
+      }));
+
+      setGroups(transformedGroups);
+      
+      // Using mock students for now - in a real app, you'd fetch enrolled students
       setStudents(mockStudents);
       setAvailableStudents(mockStudents.filter(student => !['1', '2', '3'].includes(student.id)));
     } catch (error) {
@@ -108,12 +127,28 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
 
   const handleCreateGroup = async (formData: FormData) => {
     try {
-      const newGroup = {
-        id: `group${groups.length + 1}`,
+      const groupData = {
+        course_id: courseId,
         name: formData.get('name') as string,
         description: formData.get('description') as string,
         group_type: formData.get('type') as string,
-        max_members: parseInt(formData.get('maxMembers') as string),
+        max_members: parseInt(formData.get('maxMembers') as string)
+      };
+
+      const { data, error } = await supabase
+        .from('course_groups')
+        .insert(groupData)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newGroup = {
+        id: data.id,
+        name: data.name,
+        description: data.description || '',
+        group_type: data.group_type,
+        max_members: data.max_members || 30,
         member_count: 0
       };
 
@@ -128,7 +163,7 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
       console.error('Error creating group:', error);
       toast({
         title: 'Error',
-        description: 'Failed to create group',
+        description: 'Failed to create group. Please check your permissions.',
         variant: 'destructive',
       });
     }

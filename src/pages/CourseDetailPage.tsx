@@ -117,12 +117,16 @@ const CourseDetailPage = () => {
   const handleCreateCourse = async () => {
     setIsCreating(true);
     try {
+      // For admins creating courses, instructor_id can be null initially
+      // For teachers creating courses, they become the instructor
+      const courseData = {
+        ...courseForm,
+        instructor_id: currentRole === 'teacher' ? user.id : null
+      };
+
       const { data, error } = await supabase
         .from('courses')
-        .insert({
-          ...courseForm,
-          instructor_id: user.id
-        })
+        .insert(courseData)
         .select()
         .single();
 
@@ -138,7 +142,7 @@ const CourseDetailPage = () => {
       console.error('Error creating course:', error);
       toast({
         title: 'Error',
-        description: 'Failed to create course',
+        description: 'Failed to create course. Please check your permissions.',
         variant: 'destructive',
       });
     } finally {
