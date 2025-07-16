@@ -4,6 +4,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useRole } from '@/contexts/RoleContext';
@@ -19,7 +23,8 @@ import {
   ClipboardList,
   Bell,
   Upload,
-  Download
+  Download,
+  Save
 } from 'lucide-react';
 import CourseResources from '@/components/courses/CourseResources';
 import CourseAssignments from '@/components/courses/CourseAssignments';
@@ -49,14 +54,29 @@ const CourseDetailPage = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('resources');
+  const [isCreating, setIsCreating] = useState(false);
+  const [courseForm, setCourseForm] = useState({
+    title: '',
+    description: '',
+    course_code: '',
+    department: '',
+    credits: 3,
+    semester: '',
+    academic_year: '',
+    max_students: 50
+  });
   const { toast } = useToast();
-  const { currentRole } = useRole();
+  const { currentRole, user } = useRole();
+
+  const isCreateMode = courseId === 'create';
 
   useEffect(() => {
-    if (courseId) {
+    if (courseId && !isCreateMode) {
       fetchCourse();
+    } else if (isCreateMode) {
+      setLoading(false);
     }
-  }, [courseId]);
+  }, [courseId, isCreateMode]);
 
   const fetchCourse = async () => {
     try {
@@ -94,6 +114,38 @@ const CourseDetailPage = () => {
     }
   };
 
+  const handleCreateCourse = async () => {
+    setIsCreating(true);
+    try {
+      const { data, error } = await supabase
+        .from('courses')
+        .insert({
+          ...courseForm,
+          instructor_id: user.id
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast({
+        title: 'Success',
+        description: 'Course created successfully',
+      });
+
+      navigate(`/courses/${data.id}`);
+    } catch (error) {
+      console.error('Error creating course:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to create course',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
   const getTabsForRole = () => {
     const baseTabs = [
       { value: 'content', label: 'Content', icon: FileText },
@@ -121,6 +173,147 @@ const CourseDetailPage = () => {
           <div className="h-8 bg-muted rounded w-1/4 mb-6"></div>
           <div className="h-32 bg-muted rounded mb-6"></div>
           <div className="h-96 bg-muted rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isCreateMode) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-4xl mx-auto">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/courses')}
+            className="mb-6"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Courses
+          </Button>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Create New Course</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Course Title</Label>
+                  <Input
+                    id="title"
+                    value={courseForm.title}
+                    onChange={(e) => setCourseForm({...courseForm, title: e.target.value})}
+                    placeholder="e.g., Introduction to Computer Science"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="course_code">Course Code</Label>
+                  <Input
+                    id="course_code"
+                    value={courseForm.course_code}
+                    onChange={(e) => setCourseForm({...courseForm, course_code: e.target.value})}
+                    placeholder="e.g., CS101"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={courseForm.description}
+                  onChange={(e) => setCourseForm({...courseForm, description: e.target.value})}
+                  placeholder="Brief description of the course..."
+                  rows={3}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="department">Department</Label>
+                  <Input
+                    id="department"
+                    value={courseForm.department}
+                    onChange={(e) => setCourseForm({...courseForm, department: e.target.value})}
+                    placeholder="e.g., Computer Science"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="credits">Credits</Label>
+                  <Select
+                    value={courseForm.credits.toString()}
+                    onValueChange={(value) => setCourseForm({...courseForm, credits: parseInt(value)})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 Credit</SelectItem>
+                      <SelectItem value="2">2 Credits</SelectItem>
+                      <SelectItem value="3">3 Credits</SelectItem>
+                      <SelectItem value="4">4 Credits</SelectItem>
+                      <SelectItem value="5">5 Credits</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="max_students">Max Students</Label>
+                  <Input
+                    id="max_students"
+                    type="number"
+                    value={courseForm.max_students}
+                    onChange={(e) => setCourseForm({...courseForm, max_students: parseInt(e.target.value) || 50})}
+                    min="1"
+                    max="500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="semester">Semester</Label>
+                  <Select
+                    value={courseForm.semester}
+                    onValueChange={(value) => setCourseForm({...courseForm, semester: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select semester" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Fall">Fall</SelectItem>
+                      <SelectItem value="Spring">Spring</SelectItem>
+                      <SelectItem value="Summer">Summer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="academic_year">Academic Year</Label>
+                  <Input
+                    id="academic_year"
+                    value={courseForm.academic_year}
+                    onChange={(e) => setCourseForm({...courseForm, academic_year: e.target.value})}
+                    placeholder="e.g., 2024-25"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <Button 
+                  variant="outline" 
+                  onClick={() => navigate('/courses')}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleCreateCourse}
+                  disabled={isCreating || !courseForm.title || !courseForm.course_code}
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {isCreating ? 'Creating...' : 'Create Course'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
