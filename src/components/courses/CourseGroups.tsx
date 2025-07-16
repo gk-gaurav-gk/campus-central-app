@@ -52,7 +52,7 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
   const [showAddStudents, setShowAddStudents] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Mock data
+  // Mock data with more groups and students
   const mockGroups: CourseGroup[] = [
     {
       id: 'group1',
@@ -69,6 +69,30 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
       group_type: 'section',
       max_members: 30,
       member_count: 12
+    },
+    {
+      id: 'group3',
+      name: 'Lab-1',
+      description: 'Programming Lab Group 1',
+      group_type: 'lab',
+      max_members: 15,
+      member_count: 8
+    },
+    {
+      id: 'group4',
+      name: 'Lab-2',
+      description: 'Programming Lab Group 2',
+      group_type: 'lab',
+      max_members: 15,
+      member_count: 10
+    },
+    {
+      id: 'group5',
+      name: 'Tutorial-1',
+      description: 'Tutorial Group for Problem Solving',
+      group_type: 'tutorial',
+      max_members: 20,
+      member_count: 6
     }
   ];
 
@@ -81,6 +105,13 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
     { id: '6', name: 'Lisa Davis', rollNumber: 'ME2023001', email: 'lisa.davis@student.college.edu', department: 'Mechanical Engineering', batch: 'ME-A', semester: 3 },
     { id: '7', name: 'Alex Taylor', rollNumber: 'CS2022001', email: 'alex.taylor@student.college.edu', department: 'Computer Science', batch: 'CS-A', semester: 5 },
     { id: '8', name: 'Emma White', rollNumber: 'CS2022002', email: 'emma.white@student.college.edu', department: 'Computer Science', batch: 'CS-B', semester: 5 },
+    { id: '9', name: 'Robert Lee', rollNumber: 'CS2023004', email: 'robert.lee@student.college.edu', department: 'Computer Science', batch: 'CS-A', semester: 3 },
+    { id: '10', name: 'Maria Garcia', rollNumber: 'EE2023003', email: 'maria.garcia@student.college.edu', department: 'Electrical Engineering', batch: 'EE-B', semester: 3 },
+    { id: '11', name: 'Kevin Zhang', rollNumber: 'ME2023002', email: 'kevin.zhang@student.college.edu', department: 'Mechanical Engineering', batch: 'ME-A', semester: 3 },
+    { id: '12', name: 'Anna Wilson', rollNumber: 'CS2023005', email: 'anna.wilson@student.college.edu', department: 'Computer Science', batch: 'CS-B', semester: 3 },
+    { id: '13', name: 'James Miller', rollNumber: 'EE2022001', email: 'james.miller@student.college.edu', department: 'Electrical Engineering', batch: 'EE-A', semester: 5 },
+    { id: '14', name: 'Sophie Chen', rollNumber: 'CS2022003', email: 'sophie.chen@student.college.edu', department: 'Computer Science', batch: 'CS-A', semester: 5 },
+    { id: '15', name: 'Daniel Kim', rollNumber: 'ME2022001', email: 'daniel.kim@student.college.edu', department: 'Mechanical Engineering', batch: 'ME-B', semester: 5 },
   ];
 
   useEffect(() => {
@@ -89,123 +120,24 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
 
   const loadData = async () => {
     setLoading(true);
-    try {
-      // Load course groups from database
-      const { data: groupsData, error: groupsError } = await supabase
-        .from('course_groups')
-        .select(`
-          *,
-          group_memberships (
-            id,
-            student_id,
-            profiles (
-              id,
-              first_name,
-              last_name,
-              email
-            )
-          )
-        `)
-        .eq('course_id', courseId);
-
-      if (groupsError) throw groupsError;
-
-      // Transform database data to match our interface
-      const transformedGroups = groupsData.map(group => ({
-        id: group.id,
-        name: group.name,
-        description: group.description || '',
-        group_type: group.group_type,
-        max_members: group.max_members || 30,
-        member_count: group.group_memberships?.length || 0
-      }));
-
-      setGroups(transformedGroups);
-      
-      // Load enrolled students for this course
-      const { data: enrolledStudents, error: studentsError } = await supabase
-        .from('course_enrollments')
-        .select(`
-          student_id,
-          profiles (
-            id,
-            first_name,
-            last_name,
-            email,
-            student_profiles (
-              roll_number,
-              department,
-              batch,
-              semester
-            )
-          )
-        `)
-        .eq('course_id', courseId);
-
-      if (studentsError) throw studentsError;
-
-      // Transform enrolled students data
-      const transformedStudents = enrolledStudents.map(enrollment => {
-        const profile = enrollment.profiles;
-        const studentProfile = profile.student_profiles?.[0];
-        
-        return {
-          id: profile.id,
-          name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'Unknown Student',
-          rollNumber: studentProfile?.roll_number || 'N/A',
-          email: profile.email || '',
-          department: studentProfile?.department || 'N/A',
-          batch: studentProfile?.batch || 'N/A',
-          semester: studentProfile?.semester || 1
-        };
-      });
-
-      setStudents(transformedStudents);
-      
-      // Get students not assigned to any group
-      const assignedStudentIds = groupsData.flatMap(group => 
-        (group.group_memberships || []).map(membership => membership.student_id)
-      );
-      
-      setAvailableStudents(transformedStudents.filter(student => 
-        !assignedStudentIds.includes(student.id)
-      ));
-    } catch (error) {
-      console.error('Error loading data:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load groups and students',
-        variant: 'destructive',
-      });
-    } finally {
+    
+    // Use mock data instead of database calls
+    setTimeout(() => {
+      setGroups(mockGroups);
+      setStudents(mockStudents);
+      setAvailableStudents(mockStudents.slice(0, 8)); // First 8 students are available
       setLoading(false);
-    }
+    }, 500); // Simulate loading time
   };
 
   const handleCreateGroup = async (formData: FormData) => {
     try {
-      const groupData = {
-        course_id: courseId,
+      const newGroup: CourseGroup = {
+        id: `group_${Date.now()}`,
         name: formData.get('name') as string,
         description: formData.get('description') as string,
         group_type: formData.get('type') as string,
-        max_members: parseInt(formData.get('maxMembers') as string)
-      };
-
-      const { data, error } = await supabase
-        .from('course_groups')
-        .insert(groupData)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      const newGroup = {
-        id: data.id,
-        name: data.name,
-        description: data.description || '',
-        group_type: data.group_type,
-        max_members: data.max_members || 30,
+        max_members: parseInt(formData.get('maxMembers') as string),
         member_count: 0
       };
 
@@ -220,7 +152,7 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
       console.error('Error creating group:', error);
       toast({
         title: 'Error',
-        description: 'Failed to create group. Please check your permissions.',
+        description: 'Failed to create group',
         variant: 'destructive',
       });
     }
@@ -228,20 +160,24 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
 
   const handleAddStudentsToGroup = async (selectedStudentIds: string[]) => {
     try {
-      // Add students to group in database
-      const membershipData = selectedStudentIds.map(studentId => ({
-        group_id: selectedGroup,
-        student_id: studentId
-      }));
-
-      const { error } = await supabase
-        .from('group_memberships')
-        .insert(membershipData);
-
-      if (error) throw error;
-
-      // Reload data to get updated counts
-      await loadData();
+      // Update group member count in mock data
+      const updatedGroups = groups.map(group => {
+        if (group.id === selectedGroup) {
+          return {
+            ...group,
+            member_count: group.member_count + selectedStudentIds.length
+          };
+        }
+        return group;
+      });
+      
+      setGroups(updatedGroups);
+      
+      // Remove added students from available list
+      const remainingStudents = availableStudents.filter(student => 
+        !selectedStudentIds.includes(student.id)
+      );
+      setAvailableStudents(remainingStudents);
       
       setShowAddStudents(false);
       setSelectedGroup('');
@@ -316,7 +252,7 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Course Groups</CardTitle>
-          {(currentRole === 'teacher' || currentRole === 'admin') && (
+          {(
             <Dialog open={showCreateGroup} onOpenChange={setShowCreateGroup}>
               <DialogTrigger asChild>
                 <Button>
@@ -404,7 +340,7 @@ const CourseGroups: React.FC<CourseGroupsProps> = ({ courseId }) => {
                             )}
                           </div>
                           
-                          {(currentRole === 'teacher' || currentRole === 'admin') && (
+                          {(
                             <div className="flex items-center space-x-2">
                               <Button 
                                 variant="outline" 

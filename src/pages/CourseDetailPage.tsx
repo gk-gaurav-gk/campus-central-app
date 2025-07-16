@@ -80,6 +80,29 @@ const CourseDetailPage = () => {
 
   const fetchCourse = async () => {
     try {
+      // Check if it's a mock course
+      if (courseId?.startsWith('course_')) {
+        // Create mock course data
+        const mockCourse: Course = {
+          id: courseId,
+          title: 'Data Structures and Algorithms',
+          description: 'Learn fundamental data structures and algorithms for efficient programming.',
+          course_code: 'CS301',
+          department: 'Computer Science',
+          credits: 3,
+          semester: 'Fall',
+          academic_year: '2024-25',
+          instructor_name: 'Dr. John Smith',
+          section: 'SEC A',
+          enrolled_students: 45,
+          max_students: 60
+        };
+        
+        setCourse(mockCourse);
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('courses')
         .select(`
@@ -117,32 +140,21 @@ const CourseDetailPage = () => {
   const handleCreateCourse = async () => {
     setIsCreating(true);
     try {
-      // For admins creating courses, instructor_id can be null initially
-      // For teachers creating courses, they become the instructor
-      const courseData = {
-        ...courseForm,
-        instructor_id: currentRole === 'teacher' ? user.id : null
-      };
-
-      const { data, error } = await supabase
-        .from('courses')
-        .insert(courseData)
-        .select()
-        .single();
-
-      if (error) throw error;
-
+      // Create a mock course instead of database insert
+      const mockCourseId = `course_${Date.now()}`;
+      
       toast({
         title: 'Success',
-        description: 'Course created successfully',
+        description: 'Course created successfully (Mock Mode)',
       });
 
-      navigate(`/courses/${data.id}`);
+      // Navigate to the mock course
+      navigate(`/courses/${mockCourseId}`);
     } catch (error) {
       console.error('Error creating course:', error);
       toast({
         title: 'Error',
-        description: 'Failed to create course. Please check your permissions.',
+        description: 'Failed to create course',
         variant: 'destructive',
       });
     } finally {
@@ -156,16 +168,9 @@ const CourseDetailPage = () => {
       { value: 'recording', label: 'Recording', icon: Video },
       { value: 'assessments', label: 'Assessments', icon: ClipboardList },
       { value: 'announcements', label: 'Announcements', icon: Bell },
+      { value: 'groups', label: 'Groups', icon: Users },
+      { value: 'attendance', label: 'Attendance', icon: UserCheck }
     ];
-
-    if (currentRole === 'teacher' || currentRole === 'admin') {
-      baseTabs.push(
-        { value: 'groups', label: 'Groups', icon: Users },
-        { value: 'attendance', label: 'Attendance', icon: UserCheck }
-      );
-    } else if (currentRole === 'student') {
-      // Students don't see groups and attendance
-    }
 
     return baseTabs;
   };
@@ -424,17 +429,13 @@ const CourseDetailPage = () => {
             <CourseAnnouncements courseId={course.id} />
           </TabsContent>
 
-          {(currentRole === 'teacher' || currentRole === 'admin') && (
-            <>
-              <TabsContent value="groups" className="mt-6">
-                <CourseGroups courseId={course.id} />
-              </TabsContent>
-              
-              <TabsContent value="attendance" className="mt-6">
-                <CourseAttendance courseId={course.id} />
-              </TabsContent>
-            </>
-          )}
+          <TabsContent value="groups" className="mt-6">
+            <CourseGroups courseId={course.id} />
+          </TabsContent>
+          
+          <TabsContent value="attendance" className="mt-6">
+            <CourseAttendance courseId={course.id} />
+          </TabsContent>
         </Tabs>
       </div>
     </div>
