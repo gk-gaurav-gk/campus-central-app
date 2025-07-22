@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -18,6 +17,10 @@ import AssignmentsPage from "./pages/AssignmentsPage";
 import CoursesPage from "./pages/CoursesPage";
 import CourseDetailPage from "./pages/CourseDetailPage";
 import StudentManagementPage from "./pages/StudentManagementPage";
+import MessagesPage from "./pages/MessagesPage";
+import ResearchPage from "./pages/ResearchPage";
+import PlacementsPage from "./pages/PlacementsPage";
+import SettingsPage from "./pages/SettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -71,6 +74,10 @@ const AppContent = () => {
               <Route path="/assignments" element={<AssignmentsPage />} />
               <Route path="/courses" element={<CoursesPage />} />
               <Route path="/courses/:courseId" element={<CourseDetailPage />} />
+              <Route path="/messages" element={<MessagesPage />} />
+              <Route path="/research" element={<ResearchPage />} />
+              <Route path="/placements" element={<PlacementsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
               <Route path="/admin/students" element={<StudentManagementPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
