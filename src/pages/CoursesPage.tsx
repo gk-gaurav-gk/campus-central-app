@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRole } from '@/contexts/RoleContext';
 import CourseGrid from '@/components/courses/CourseGrid';
+import CourseGridAdmin from '@/components/courses/CourseGridAdmin';
 
 const CoursesPage = () => {
   const { currentRole } = useRole();
@@ -19,7 +20,7 @@ const CoursesPage = () => {
           </p>
         </div>
 
-        <CourseGrid />
+        {currentRole === 'admin' ? <CourseGridAdmin /> : <CourseGrid />}
       </div>
     </div>
   );
