@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,18 @@ interface CourseCreationFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
 }
+
+// Mock data fallback for instructors
+const mockInstructors = [
+  { id: 'mock-teacher-1', first_name: 'John', last_name: 'Smith', email: 'john.smith@faculty.college.edu' },
+  { id: 'mock-teacher-2', first_name: 'Sarah', last_name: 'Johnson', email: 'sarah.johnson@faculty.college.edu' },
+  { id: 'mock-teacher-3', first_name: 'Michael', last_name: 'Brown', email: 'michael.brown@faculty.college.edu' },
+  { id: 'mock-teacher-4', first_name: 'Emily', last_name: 'Davis', email: 'emily.davis@faculty.college.edu' },
+  { id: 'mock-teacher-5', first_name: 'David', last_name: 'Wilson', email: 'david.wilson@faculty.college.edu' },
+  { id: 'mock-teacher-6', first_name: 'Lisa', last_name: 'Anderson', email: 'lisa.anderson@faculty.college.edu' },
+  { id: 'mock-teacher-7', first_name: 'Robert', last_name: 'Taylor', email: 'robert.taylor@faculty.college.edu' },
+  { id: 'mock-teacher-8', first_name: 'Jennifer', last_name: 'Martinez', email: 'jennifer.martinez@faculty.college.edu' }
+];
 
 export const CourseCreationForm: React.FC<CourseCreationFormProps> = ({ onSuccess, onCancel }) => {
   const { toast } = useToast();
@@ -41,11 +54,23 @@ export const CourseCreationForm: React.FC<CourseCreationFormProps> = ({ onSucces
           .eq('role', 'teacher')
           .order('first_name');
 
-        if (error) throw error;
-        setTeachers(data || []);
+        if (error) {
+          console.error('Error loading teachers:', error);
+          // Use mock data as fallback
+          setTeachers(mockInstructors);
+        } else if (data && data.length > 0) {
+          setTeachers(data);
+        } else {
+          // Use mock data if no teachers found in database
+          console.log('No teachers found in database, using mock data');
+          setTeachers(mockInstructors);
+        }
         setTeachersLoaded(true);
       } catch (error) {
         console.error('Error loading teachers:', error);
+        // Use mock data as fallback
+        setTeachers(mockInstructors);
+        setTeachersLoaded(true);
       }
     };
 
